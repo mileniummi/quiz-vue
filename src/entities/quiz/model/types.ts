@@ -2,20 +2,20 @@
 import { IQuestion } from '~/entities/questions/model/types.ts';
 
 export enum EQuizRounds {
-    WarmUp = 'WarmUp',
-    Logic = 'Logic',
-    Shazam = 'Shazam',
-    MovieMaker = 'MovieMaker',
-    Hardcore = 'Hardcore',
-    LastChance = 'LastChance'
+  WarmUp = 'WarmUp',
+  Logic = 'Logic',
+  Shazam = 'Shazam',
+  MovieMaker = 'MovieMaker',
+  Hardcore = 'Hardcore',
+  LastChance = 'LastChance'
 }
 
 export interface IQuizRound {
-    name: EQuizRounds;
-    questions: IQuestion[];
-    currentQuestion: number | null;
-    questionsCount: number;
-    timePerQuestion: number;
+  name: EQuizRounds;
+  questions: IQuestion[];
+  currentQuestion: number | null;
+  questionsCount: number;
+  timePerQuestion: number;
 }
 
 export class QuizRound implements IQuizRound {
@@ -43,11 +43,9 @@ export class QuizRound implements IQuizRound {
 }
 
 export interface IQuiz {
-    rounds: {
-        [key in EQuizRounds]: QuizRound
-    }
-
-    currentRound: EQuizRounds;
+  name: string | null;
+  rounds: { [key in EQuizRounds]: QuizRound }
+  currentRound: EQuizRounds;
 }
 
 export class WarmUpQuizRound extends QuizRound {
@@ -94,6 +92,7 @@ export class LastChanceQuizRound extends QuizRound {
 }
 
 export const initiateQuiz = () => ({
+  name: 'My Quiz',
   rounds: {
     [EQuizRounds.WarmUp]: new WarmUpQuizRound(),
     [EQuizRounds.Logic]: new LogicQuizRound(),

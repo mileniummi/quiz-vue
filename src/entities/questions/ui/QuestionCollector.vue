@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { watch } from 'vue';
+import { notification } from 'ant-design-vue';
 import { IQuestion } from '~/entities/questions/model/types.ts';
 import { useNewQuizStore } from '~/feature/quiz-creator/model/newQuiz.store.ts';
 import { EQuizRounds } from '~/entities/quiz/model/types.ts';
@@ -14,7 +15,15 @@ const props = defineProps<Props>();
 const store = useNewQuizStore();
 
 watch(() => props.selectedQuestions, () => {
-  store.addQuestions(props.selectedQuestions);
+  try {
+    store.addQuestions(props.selectedQuestions);
+  } catch {
+    notification.warn({
+      message: 'This round is already filled',
+      description: 'Please choose another round',
+      placement: 'topRight',
+    });
+  }
 });
 
 const setCurrentRoundToFill = (name: EQuizRounds) => {
@@ -63,14 +72,25 @@ const setCurrentRoundToFill = (name: EQuizRounds) => {
       </AListItem>
     </AFlex>
     <template #footer>
-      <AFlex justify="end">
-        <AButton
-          :disabled="!store.isFilled"
-          type="primary"
-        >
-          Create Quiz
-        </AButton>
-      </AFlex>
+      <AForm>
+        <AFlex justify="space-between">
+          <AFormItem
+            name="name"
+            label="Quiz Name"
+            required
+          >
+            <AInput
+              class="input"
+            />
+          </AFormItem>
+          <AButton
+            :disabled="!store.isFilled"
+            type="primary"
+          >
+            Create Quiz
+          </AButton>
+        </AFlex>
+      </AForm>
     </template>
   </AList>
 </template>
@@ -94,5 +114,9 @@ const setCurrentRoundToFill = (name: EQuizRounds) => {
 .selected {
   border: 1px solid transparent;
   border-image: linear-gradient(90deg, #87d068, #108ee9) 1;
+}
+
+.input {
+  max-width: 150px;
 }
 </style>
