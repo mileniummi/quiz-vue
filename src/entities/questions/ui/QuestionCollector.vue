@@ -1,18 +1,28 @@
 <script setup lang="ts">
 
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { notification } from 'ant-design-vue';
-import { IQuestion } from '~/entities/questions/model/types.ts';
-import { useNewQuizStore } from '~/feature/quiz-creator/model/newQuiz.store.ts';
+import { useQueryClient } from '@tanstack/vue-query';
+import { IQuestion, IQuestionFilters } from '~/entities/questions/model/types.ts';
+import { useNewQuizStore } from '~/features/quiz-creator/model/new-quiz.store.ts';
 import { EQuizRounds } from '~/entities/quiz/model/types.ts';
+import { EQueryKeys } from '~/api/api-config.ts';
+import { useQuizStore } from '~/features/quizzes/model/quiz.store.ts';
+import router from '~/app/router/model/router.ts';
+import { EAppRoutes } from '~/app/router/model/constants.ts';
 
 interface Props {
   selectedQuestions: IQuestion[];
   setSelectedQuestions: (_: IQuestion[]) => void;
+  filters: IQuestionFilters;
+  allQuestions: IQuestion[];
 }
 
 const props = defineProps<Props>();
 const store = useNewQuizStore();
+const quizStore = useQuizStore();
+const queryClient = useQueryClient();
+const formState = ref<{ quizName: string }>({ quizName: '' });
 
 watch(() => props.selectedQuestions, () => {
   try {
@@ -28,7 +38,25 @@ watch(() => props.selectedQuestions, () => {
 
 const setCurrentRoundToFill = (name: EQuizRounds) => {
   props.setSelectedQuestions([]);
+  queryClient.invalidateQueries({ queryKey: [EQueryKeys.Questions] });
   store.setCurrentRoundToFill(name);
+};
+
+const setRandomQuestions = () => {
+  const questionCountToSelect = store.getCurrentRound.questionsCount
+    - store.getCurrentRound.questions.length;
+
+  const randomQuestions = props.allQuestions
+    .filter((question) => !store.getCurrentRound.questions.some((q) => q.id === question.id))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, questionCountToSelect);
+
+  props.setSelectedQuestions(props.selectedQuestions.concat(randomQuestions));
+};
+
+const createQuiz = () => {
+  quizStore.addQuiz({ ...store.quiz, name: formState.value.quizName });
+  router.push({ path: EAppRoutes.Quizzes });
 };
 
 </script>
@@ -72,23 +100,38 @@ const setCurrentRoundToFill = (name: EQuizRounds) => {
       </AListItem>
     </AFlex>
     <template #footer>
-      <AForm>
+      <AForm
+        :model="formState"
+        @finish="createQuiz"
+      >
         <AFlex justify="space-between">
           <AFormItem
-            name="name"
+            name="quizName"
             label="Quiz Name"
-            required
+            :rules="[{required: true, message: 'Please input quiz name'}]"
           >
             <AInput
+              v-model:value="formState.quizName"
               class="input"
             />
           </AFormItem>
-          <AButton
-            :disabled="!store.isFilled"
-            type="primary"
-          >
-            Create Quiz
-          </AButton>
+          <AFlex gap="8">
+            <AButton
+              type="primary"
+              :disabled="!(store.getCurrentRound.questions.length
+                < store.getCurrentRound.questionsCount)"
+              @click="setRandomQuestions"
+            >
+              Random
+            </AButton>
+            <AButton
+              :disabled="!store.isFilled"
+              type="primary"
+              html-type="submit"
+            >
+              Create Quiz
+            </AButton>
+          </AFlex>
         </AFlex>
       </AForm>
     </template>

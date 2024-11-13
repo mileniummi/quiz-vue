@@ -14,11 +14,13 @@ defineProps<Props>();
 
 const { data: tags } = useQuery({
   queryKey: [EQueryKeys.QuizTags],
+  refetchOnWindowFocus: false,
   queryFn: async () => (await axios.get<IQuestionTagsResponse[]>('/tags')).data,
 });
 
 const { data: categories } = useQuery({
   queryKey: [EQueryKeys.QuizCategories],
+  refetchOnWindowFocus: false,
   queryFn: async () => (await axios.get<IQuestionTagsResponse[]>('/categories')).data,
 });
 

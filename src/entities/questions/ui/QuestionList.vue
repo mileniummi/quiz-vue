@@ -1,23 +1,17 @@
 <script setup lang="ts">
 
-import { useQuery } from '@tanstack/vue-query';
-import axios from 'axios';
-import { EQueryKeys } from '~/api/api-config.ts';
-import { IQuestion, IQuestionFilters } from '~/entities/questions/model/types.ts';
+import { IQuestion } from '~/entities/questions/model/types.ts';
 import { QuestionListTableColumns } from '~/entities/questions/model/table-columns.ts';
 
 interface Props {
-  filters: IQuestionFilters;
+  questions: IQuestion[];
+  isLoading: boolean;
+  isFetching: boolean;
   selectedQuestionKeys: number[];
   setSelectedQuestions: (_: IQuestion[]) => void;
 }
 
 const props = defineProps<Props>();
-
-const { data, isLoading, isFetching } = useQuery({
-  queryKey: [EQueryKeys.Questions, props.filters],
-  queryFn: async () => (await axios.get<IQuestion[]>('/questions', { params: props.filters })).data,
-});
 
 </script>
 
@@ -25,7 +19,7 @@ const { data, isLoading, isFetching } = useQuery({
   <ATable
     :columns="QuestionListTableColumns"
     :loading="isLoading || isFetching"
-    :data-source="data"
+    :data-source="questions"
     :pagination="false"
     :row-selection="{
       onChange(_: number[], selectedRows: IQuestion[]) {

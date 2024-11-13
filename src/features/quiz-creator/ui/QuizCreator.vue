@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
+import axios from 'axios';
 import QuestionListFilter from '~/entities/questions/ui/QuestionListFilter.vue';
 import QuestionList from '~/entities/questions/ui/QuestionList.vue';
 
 import { IQuestion, IQuestionFilters } from '~/entities/questions/model/types.ts';
 import QuestionCollector from '~/entities/questions/ui/QuestionCollector.vue';
+import { EQueryKeys } from '~/api/api-config.ts';
 
 const filters = ref<IQuestionFilters>({});
 const selectedQuestions = ref<IQuestion[]>([]);
@@ -13,9 +16,11 @@ const setSelectedQuestions = (questions: IQuestion[]) => {
   selectedQuestions.value = questions;
 };
 
-const selectedQuestionsKeys = computed(
-  () => selectedQuestions.value.map((question) => question.id),
-);
+const { data: questions, isLoading, isFetching } = useQuery({
+  queryKey: [EQueryKeys.Questions, filters.value],
+  refetchOnWindowFocus: false,
+  queryFn: async () => (await axios.get<IQuestion[]>('/questions', { params: filters.value })).data,
+});
 
 </script>
 
@@ -26,13 +31,18 @@ const selectedQuestionsKeys = computed(
   >
     <QuestionListFilter :filters="filters" />
     <QuestionCollector
+      :filters="filters"
       :selected-questions="selectedQuestions"
       :set-selected-questions="setSelectedQuestions"
+      :all-questions="questions || []"
     />
   </AFlex>
   <QuestionList
+    :questions="questions || []"
+    :is-fetching="isFetching"
+    :is-loading="isLoading"
     :set-selected-questions="setSelectedQuestions"
-    :selected-question-keys="selectedQuestionsKeys"
+    :selected-question-keys="selectedQuestions.map((question) => question.id)"
     :filters="filters"
   />
 </template>

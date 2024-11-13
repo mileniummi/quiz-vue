@@ -5,8 +5,8 @@ import {
 import { IQuestion } from '~/entities/questions/model/types.ts';
 
 interface NewQuizStoreState {
-    quiz: IQuiz;
-    currentRoundToFill: EQuizRounds;
+  quiz: IQuiz;
+  currentRoundToFill: EQuizRounds;
 }
 
 export const useNewQuizStore = defineStore('new-quiz', {
