@@ -12,7 +12,16 @@ import Menu from '~/app/router/ui/Menu.vue';
           gap="16"
         >
           <Menu />
-          <RouterView />
+          <RouterView v-slot="{ Component }">
+            <Transition
+              name="fade"
+              mode="out-in"
+              :duration="100"
+              appear
+            >
+              <component :is="Component" />
+            </Transition>
+          </RouterView>
         </AFlex>
       </ALayout>
     </AApp>
@@ -20,4 +29,14 @@ import Menu from '~/app/router/ui/Menu.vue';
 </template>
 
 <style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 </style>

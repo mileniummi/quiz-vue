@@ -21,6 +21,10 @@ export const useNewQuizStore = defineStore('new-quiz', {
     setCurrentRoundToFill(round: EQuizRounds) {
       this.currentRoundToFill = round;
     },
+    reset() {
+      this.quiz = initiateQuiz();
+      this.currentRoundToFill = EQuizRounds.WarmUp;
+    },
   },
   getters: {
     getCurrentRound(): IQuizRound {

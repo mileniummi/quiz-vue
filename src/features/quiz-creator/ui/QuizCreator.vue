@@ -7,7 +7,7 @@ import QuestionList from '~/entities/questions/ui/QuestionList.vue';
 
 import { IQuestion, IQuestionFilters } from '~/entities/questions/model/types.ts';
 import QuestionCollector from '~/entities/questions/ui/QuestionCollector.vue';
-import { EQueryKeys } from '~/api/api-config.ts';
+import { EQueryKeys } from '~/shared/api/api-config.ts';
 
 const filters = ref<IQuestionFilters>({});
 const selectedQuestions = ref<IQuestion[]>([]);
@@ -26,25 +26,30 @@ const { data: questions, isLoading, isFetching } = useQuery({
 
 <template>
   <AFlex
-    gap="small"
-    justify="space-between"
+    vertical
+    gap="middle"
   >
-    <QuestionListFilter :filters="filters" />
-    <QuestionCollector
-      :filters="filters"
-      :selected-questions="selectedQuestions"
+    <AFlex
+      gap="small"
+      justify="space-between"
+    >
+      <QuestionListFilter :filters="filters" />
+      <QuestionCollector
+        :filters="filters"
+        :selected-questions="selectedQuestions"
+        :set-selected-questions="setSelectedQuestions"
+        :all-questions="questions || []"
+      />
+    </AFlex>
+    <QuestionList
+      :questions="questions || []"
+      :is-fetching="isFetching"
+      :is-loading="isLoading"
       :set-selected-questions="setSelectedQuestions"
-      :all-questions="questions || []"
+      :selected-question-keys="selectedQuestions.map((question) => question.id)"
+      :filters="filters"
     />
   </AFlex>
-  <QuestionList
-    :questions="questions || []"
-    :is-fetching="isFetching"
-    :is-loading="isLoading"
-    :set-selected-questions="setSelectedQuestions"
-    :selected-question-keys="selectedQuestions.map((question) => question.id)"
-    :filters="filters"
-  />
 </template>
 
 <style>

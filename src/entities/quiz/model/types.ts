@@ -1,29 +1,28 @@
 // eslint-disable-next-line max-classes-per-file
 import { IQuestion } from '~/entities/questions/model/types.ts';
+import { uniqueId } from '~/shared/constants/id.ts';
+import { IQuizAttempt } from '~/entities/quiz-results/model/types.ts';
 
 export enum EQuizRounds {
-  WarmUp = 'WarmUp',
-  Logic = 'Logic',
-  Shazam = 'Shazam',
-  MovieMaker = 'MovieMaker',
-  Hardcore = 'Hardcore',
-  LastChance = 'LastChance'
+    WarmUp = 'Warm up',
+    Logic = 'Logic',
+    Shazam = 'Shazam',
+    MovieMaker = 'Movie maker',
+    Hardcore = 'Hardcore',
+    LastChance = 'Last chance'
 }
 
 export interface IQuizRound {
-  name: EQuizRounds;
-  questions: IQuestion[];
-  currentQuestion: number | null;
-  questionsCount: number;
-  timePerQuestion: number;
+    name: EQuizRounds;
+    questions: IQuestion[];
+    questionsCount: number;
+    timePerQuestion: number;
 }
 
 export class QuizRound implements IQuizRound {
   name = EQuizRounds.WarmUp;
 
   questions: IQuestion[] = [];
-
-  currentQuestion: number | null = null;
 
   questionsCount = 5;
 
@@ -40,12 +39,17 @@ export class QuizRound implements IQuizRound {
   public isFilled() {
     return this.questions.length === this.questionsCount;
   }
+
+  public getRoundDuration() {
+    return this.questionsCount * this.timePerQuestion;
+  }
 }
 
 export interface IQuiz {
-  name: string | null;
-  rounds: { [key in EQuizRounds]: QuizRound }
-  currentRound: EQuizRounds;
+    name: string | null;
+    id: number;
+    rounds: { [key in EQuizRounds]: QuizRound }
+    attempts: IQuizAttempt[];
 }
 
 export class WarmUpQuizRound extends QuizRound {
@@ -91,8 +95,9 @@ export class LastChanceQuizRound extends QuizRound {
   timePerQuestion = 20;
 }
 
-export const initiateQuiz = () => ({
+export const initiateQuiz = (): IQuiz => ({
   name: 'My Quiz',
+  id: uniqueId.next().value as number,
   rounds: {
     [EQuizRounds.WarmUp]: new WarmUpQuizRound(),
     [EQuizRounds.Logic]: new LogicQuizRound(),
@@ -101,5 +106,5 @@ export const initiateQuiz = () => ({
     [EQuizRounds.Hardcore]: new HardCoreQuizRound(),
     [EQuizRounds.LastChance]: new LastChanceQuizRound(),
   },
-  currentRound: EQuizRounds.WarmUp,
+  attempts: [],
 });

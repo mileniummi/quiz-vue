@@ -23,6 +23,7 @@ module.exports = {
         'import/no-unresolved': 'off',
         'import/prefer-default-export': 'off',
         'no-unused-vars': 'warn',
-        'vue/valid-define-props': 'off'
+        'vue/valid-define-props': 'off',
+        'linebreak-style': ['error', 'windows'],
     }
 }

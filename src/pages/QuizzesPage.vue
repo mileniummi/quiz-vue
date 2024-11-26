@@ -3,7 +3,9 @@ import Quizzes from '~/features/quizzes/ui/Quizzes.vue';
 </script>
 
 <template>
-  <Quizzes />
+  <div>
+    <Quizzes />
+  </div>
 </template>
 
 <style></style>

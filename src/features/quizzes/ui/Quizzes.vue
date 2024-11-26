@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useQuizStore } from '~/features/quizzes/model/quiz.store.ts';
-import { EAppRoutes } from '~/app/router/model/constants.ts';
+import { useQuizStore } from '~/shared/store/slices/quiz.store.ts';
+import { EAppRouteNames, EAppRoutes } from '~/app/router/model/constants.ts';
 import { getRandomDarkPaletteColor } from '~/shared/constants/colors.ts';
 
 const store = useQuizStore();
@@ -17,11 +17,11 @@ const store = useQuizStore();
       <ATypographyTitle :level="3">
         Quizzes
       </ATypographyTitle>
-      <AButton type="primary">
-        <RouterLink :to="EAppRoutes.CreateQuiz">
+      <RouterLink :to="EAppRoutes.CreateQuiz">
+        <AButton type="primary">
           Create New Quiz
-        </RouterLink>
-      </AButton>
+        </AButton>
+      </RouterLink>
     </AFlex>
     <AList
       bordered
@@ -39,11 +39,9 @@ const store = useQuizStore();
             </template>
           </AListItemMeta>
           <template #actions>
-            <AButton>
-              <RouterLink :to="{ name: EAppRoutes.Quiz, params: { id: item.id } }">
-                Play
-              </RouterLink>
-            </AButton>
+            <RouterLink :to="{ name: EAppRouteNames.Quiz, params: { id: item.id } }">
+              <AButton>Play</AButton>
+            </RouterLink>
           </template>
         </AListItem>
       </template>

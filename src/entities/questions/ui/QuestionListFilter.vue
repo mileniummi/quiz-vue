@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
-import { EQueryKeys } from '~/api/api-config.ts';
+import { EQueryKeys } from '~/shared/api/api-config.ts';
 import { QuestionDifficultyOptions } from '~/entities/questions/model/constants.ts';
 import { IQuestionFilters, IQuestionTagsResponse } from '~/entities/questions/model/types.ts';
 

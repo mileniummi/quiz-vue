@@ -4,10 +4,10 @@ import { ref, watch } from 'vue';
 import { notification } from 'ant-design-vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { IQuestion, IQuestionFilters } from '~/entities/questions/model/types.ts';
-import { useNewQuizStore } from '~/features/quiz-creator/model/new-quiz.store.ts';
+import { useNewQuizStore } from '~/shared/store/slices/new-quiz.store.ts';
 import { EQuizRounds } from '~/entities/quiz/model/types.ts';
-import { EQueryKeys } from '~/api/api-config.ts';
-import { useQuizStore } from '~/features/quizzes/model/quiz.store.ts';
+import { EQueryKeys } from '~/shared/api/api-config.ts';
+import { useQuizStore } from '~/shared/store/slices/quiz.store.ts';
 import router from '~/app/router/model/router.ts';
 import { EAppRoutes } from '~/app/router/model/constants.ts';
 
@@ -49,13 +49,14 @@ const setRandomQuestions = () => {
   const randomQuestions = props.allQuestions
     .filter((question) => !store.getCurrentRound.questions.some((q) => q.id === question.id))
     .sort(() => Math.random() - 0.5)
-    .slice(0, questionCountToSelect);
+    .slice(0, questionCountToSelect).filter(Boolean);
 
   props.setSelectedQuestions(props.selectedQuestions.concat(randomQuestions));
 };
 
 const createQuiz = () => {
   quizStore.addQuiz({ ...store.quiz, name: formState.value.quizName });
+  store.reset();
   router.push({ path: EAppRoutes.Quizzes });
 };
 
@@ -141,22 +142,26 @@ const createQuiz = () => {
 <style scoped>
 
 .container {
-  max-width: 600px;
+  max-width: 610px;
   padding: 8px;
 }
 
 .round {
   cursor: pointer;
-  min-width: 250px;
+  min-width: 260px;
 }
 
 .round-name {
-  min-width: 130px;
+  min-width: 140px;
 }
 
 .selected {
   border: 1px solid transparent;
   border-image: linear-gradient(90deg, #87d068, #108ee9) 1;
+}
+
+.selected:last-child {
+  border-block-end: 1px solid transparent;
 }
 
 .input {
