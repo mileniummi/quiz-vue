@@ -1,28 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { Empty } from 'ant-design-vue';
-import { storeToRefs } from 'pinia';
 import { EQuizSteps, QuizSteps } from '~/entities/quiz/model/quiz-game-steps.ts';
 import { IQuiz } from '~/entities/quiz/model/types.ts';
 import QuizGameProgress from '~/entities/quiz/ui/QuizGameProgress.vue';
 import QuizGameLogic from '~/entities/quiz/ui/QuizGameLogic.vue';
-import { useQuizStore } from '~/shared/store/slices/quiz.store.ts';
+import { useQuizAttemptStore } from '~/shared/store/slices/quiz-attempt.store.ts';
+import QuizAttemptStats from '~/entities/quiz-results/ui/QuizAttemptStats.vue';
 
 interface Props {
   quiz: IQuiz;
 }
 
 const props = defineProps<Props>();
-const store = useQuizStore();
-const currentStep = ref(EQuizSteps.NotStarted);
-
-const { getQuizLatestAttempt } = storeToRefs(store);
-
-const attempt = computed(() => getQuizLatestAttempt.value(props.quiz.id));
+const store = useQuizAttemptStore();
+const currentStep = ref(
+  props.quiz.attempts.length > 0 ? EQuizSteps.WatchingResults : EQuizSteps.NotStarted,
+);
 
 const playQuiz = () => {
   currentStep.value = EQuizSteps.InProgress;
-  store.createQuizAttempt(props.quiz.id);
+  store.initiateQuizAttempt();
 };
 
 </script>
@@ -44,8 +42,9 @@ const playQuiz = () => {
       class="container"
     >
       <QuizGameLogic
-        v-if="attempt"
-        :attempt="attempt"
+        v-if="store.attempt"
+        :attempt="store.attempt"
+        :change-quiz-step="step => currentStep = step"
         :quiz="quiz"
       />
       <QuizGameProgress :quiz="quiz" />
@@ -68,6 +67,11 @@ const playQuiz = () => {
         Play
       </AButton>
     </AEmpty>
+    <QuizAttemptStats
+      v-if="currentStep === EQuizSteps.WatchingResults"
+      :play-again="playQuiz"
+      :attempts="quiz.attempts"
+    />
   </AFlex>
 </template>
 

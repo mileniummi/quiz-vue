@@ -1,9 +1,8 @@
-import { EQuizRounds } from '~/entities/quiz/model/types.ts';
+import { EQuizRounds, QuizRound } from '~/entities/quiz/model/types.ts';
 
 export interface IQuizRoundAnswerStats {
   totalQuestionsCount: number;
   correctAnswersCount: number;
-  incorrectAnswersCount: number;
 }
 
 export type TQuizResults = {
@@ -11,7 +10,10 @@ export type TQuizResults = {
 }
 
 export interface IQuizAttempt {
-  round: EQuizRounds;
+  round: QuizRound;
+  roundEnded: boolean;
+  attemptFinished: boolean;
   questionNumber: number;
-  results: Partial<TQuizResults>
+  startedAt: Date;
+  results: TQuizResults;
 }

@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { QuizGameRoundDescription } from '~/entities/quiz/model/quiz-game-rounds.ts';
 import { IQuiz } from '~/entities/quiz/model/types.ts';
 import ClockIcon from '~/assets/icons/ClockIcon.vue';
-import { useQuizStore } from '~/shared/store/slices/quiz.store.ts';
+import { useQuizAttemptStore } from '~/shared/store/slices/quiz-attempt.store.ts';
 
 interface Props {
   quiz: IQuiz;
 }
 
 defineProps<Props>();
-const store = useQuizStore();
-const { getQuizLatestAttempt } = storeToRefs(store);
+const store = useQuizAttemptStore();
 </script>
 
 <template>
@@ -34,7 +32,7 @@ const { getQuizLatestAttempt } = storeToRefs(store);
         <ACard
           :class="{
             'round-description': true,
-            'selected': round.name === getQuizLatestAttempt(quiz.id)?.round
+            'selected': round.name === store.attempt?.round.name
           }"
           size="small"
         >
@@ -52,7 +50,7 @@ const { getQuizLatestAttempt } = storeToRefs(store);
                     <ClockIcon />
                     {{
                       (quiz.rounds[round.name].getRoundDuration() / 60)
-                        .toFixed(2).padStart(4, '0').replace('.', ':')
+                        .toFixed(2).padStart(4, "0").replace(".", ":")
 
                     }}
                   </AFlex>

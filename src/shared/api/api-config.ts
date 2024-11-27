@@ -8,6 +8,11 @@ axios.defaults.paramsSerializer = (params) => qs.stringify(params, {
   encode: false,
 });
 
+export enum EApiBooleanValue {
+  True = 'true',
+  False = 'false',
+}
+
 export enum EQueryKeys {
   QuizTags = 'QuizTags',
   QuizCategories = 'QuizCategories',

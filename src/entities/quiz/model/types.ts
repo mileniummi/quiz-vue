@@ -4,19 +4,19 @@ import { uniqueId } from '~/shared/constants/id.ts';
 import { IQuizAttempt } from '~/entities/quiz-results/model/types.ts';
 
 export enum EQuizRounds {
-    WarmUp = 'Warm up',
-    Logic = 'Logic',
-    Shazam = 'Shazam',
-    MovieMaker = 'Movie maker',
-    Hardcore = 'Hardcore',
-    LastChance = 'Last chance'
+  WarmUp = 'Warm up',
+  Logic = 'Logic',
+  Shazam = 'Shazam',
+  MovieMaker = 'Movie maker',
+  Hardcore = 'Hardcore',
+  LastChance = 'Last chance'
 }
 
 export interface IQuizRound {
-    name: EQuizRounds;
-    questions: IQuestion[];
-    questionsCount: number;
-    timePerQuestion: number;
+  name: EQuizRounds;
+  questions: IQuestion[];
+  questionsCount: number;
+  timePerQuestion: number;
 }
 
 export class QuizRound implements IQuizRound {
@@ -40,19 +40,29 @@ export class QuizRound implements IQuizRound {
     return this.questions.length === this.questionsCount;
   }
 
+  public isLastRound() {
+    return this.name === EQuizRounds.LastChance;
+  }
+
   public getRoundDuration() {
     return this.questionsCount * this.timePerQuestion;
+  }
+
+  public getNextRound(): void | QuizRound {
   }
 }
 
 export interface IQuiz {
-    name: string | null;
-    id: number;
-    rounds: { [key in EQuizRounds]: QuizRound }
-    attempts: IQuizAttempt[];
+  name: string | null;
+  id: number;
+  rounds: { [key in EQuizRounds]: QuizRound };
+  attempts: IQuizAttempt[];
 }
 
 export class WarmUpQuizRound extends QuizRound {
+  getNextRound(): void | QuizRound {
+    return new LogicQuizRound();
+  }
 }
 
 export class LogicQuizRound extends QuizRound {
@@ -61,6 +71,10 @@ export class LogicQuizRound extends QuizRound {
   questionsCount = 7;
 
   timePerQuestion = 120;
+
+  getNextRound(): void | QuizRound {
+    return new ShazamQuizRound();
+  }
 }
 
 export class ShazamQuizRound extends QuizRound {
@@ -69,6 +83,10 @@ export class ShazamQuizRound extends QuizRound {
   questionsCount = 10;
 
   timePerQuestion = 30;
+
+  getNextRound(): void | QuizRound {
+    return new MovieMakerQuizRound();
+  }
 }
 
 export class MovieMakerQuizRound extends QuizRound {
@@ -77,6 +95,10 @@ export class MovieMakerQuizRound extends QuizRound {
   questionsCount = 10;
 
   timePerQuestion = 40;
+
+  getNextRound(): void | QuizRound {
+    return new HardCoreQuizRound();
+  }
 }
 
 export class HardCoreQuizRound extends QuizRound {
@@ -85,6 +107,10 @@ export class HardCoreQuizRound extends QuizRound {
   questionsCount = 6;
 
   timePerQuestion = 30;
+
+  getNextRound(): void | QuizRound {
+    return new LastChanceQuizRound();
+  }
 }
 
 export class LastChanceQuizRound extends QuizRound {

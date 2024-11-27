@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { EQuizRounds, IQuiz } from '~/entities/quiz/model/types.ts';
+import { IQuiz } from '~/entities/quiz/model/types.ts';
 import { IQuizAttempt } from '~/entities/quiz-results/model/types.ts';
 
 export const useQuizStore = defineStore('quizzes', {
@@ -10,16 +10,9 @@ export const useQuizStore = defineStore('quizzes', {
     addQuiz(quiz: IQuiz) {
       this.quizzes.push(quiz);
     },
-
-    createQuizAttempt(quizId: number) {
+    addQuizAttempt(quizId: number, attempt: IQuizAttempt) {
       const quiz = this.quizzes.find((q) => q.id === quizId);
-      if (quiz) {
-        quiz.attempts.push({
-          round: EQuizRounds.WarmUp,
-          questionNumber: 0,
-          results: {},
-        });
-      }
+      if (quiz) quiz.attempts.push(attempt);
     },
   },
   getters: {
